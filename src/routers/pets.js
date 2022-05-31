@@ -5,9 +5,25 @@ const db = require("../../db");
 // GET requests
 router.get("/", async (req, res) => {
   const typeReq = req.query.type;
-  let sqlString = 'SELECT * FROM "pets"';
+  const microchip = req.query.microchip;
 
-  if (typeReq) sqlString += ` WHERE type = '${typeReq}';`;
+  let page = req.query.page;
+  let perPage = req.query.per_page;
+
+  page = page === undefined || page === "1" ? "" : "OFFSET " + page * perPage;
+
+  perPage = perPage === undefined ? "LIMIT 20" : "LIMIT " + perPage;
+  if (perPage > 50) perPage = 50;
+
+  let sqlString = `SELECT * FROM "pets" ${page} ${perPage}`;
+
+  if (typeReq && microchip !== undefined) {
+    sqlString += ` WHERE type = '${typeReq}' AND microchip = '${microchip}';`;
+  } else if (typeReq) {
+    sqlString += ` WHERE type = '${typeReq}';`;
+  } else if (microchip !== undefined) {
+    sqlString += ` WHERE microchip = '${microchip}';`;
+  }
 
   const result = await db.query(sqlString);
 
