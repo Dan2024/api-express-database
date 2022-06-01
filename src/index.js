@@ -1,12 +1,10 @@
-const app = require('./server.js')
+const app = require("./server.js");
 const db = require("../db");
 const port = 3030;
 
 app.listen(port, () => {
-
   //Connect to the database
-  db.connect(error => {
-
+  db.connect((error) => {
     //If there is an error connecting to the database,
     //log it out to the console
     if (error) {
